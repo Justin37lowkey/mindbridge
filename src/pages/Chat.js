@@ -12,8 +12,17 @@ function Chat() {
   const [sending, setSending] = useState(false);
   const { therapistId } = useParams();
   const navigate = useNavigate();
-  const user = auth.currentUser;
+ const user = auth.currentUser;
   const bottomRef = useRef(null);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
+  if (!user) return null;
 
   const chatId = [user.uid, therapistId].sort().join('_');
 
@@ -61,7 +70,7 @@ function Chat() {
           <div style={styles.avatar}>T</div>
           <div>
             <div style={styles.headerName}>Therapist Session</div>
-            <div style={styles.headerStatus}>🟢 Encrypted & Secure</div>
+            <div style={styles.headerStatus}>🟢 Secure Connection</div>
           </div>
         </div>
         <div style={styles.placeholder} />
@@ -69,7 +78,7 @@ function Chat() {
 
       {/* Encryption Notice */}
       <div style={styles.notice}>
-        🔒 Messages are end-to-end encrypted. Your privacy is protected.
+        🔒 Messages are securely stored and transmitted. Your privacy is protected.
       </div>
 
       {/* Messages */}
