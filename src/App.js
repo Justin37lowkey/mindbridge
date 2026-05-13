@@ -11,6 +11,7 @@ import Admin from './pages/Admin';
 import History from './pages/History';
 import Notifications from './pages/Notifications';
 import './App.css';
+import VideoCall from './pages/VideoCall';
 
 function App() {
   const [user, loading] = useAuthState(auth);
@@ -32,6 +33,7 @@ function App() {
         <Route path="/therapists" element={user ? <Therapists /> : <Navigate to="/login" />} />
         <Route path="/admin" element={user ? <Admin /> : <Navigate to="/login" />} />
         <Route path="/history" element={user ? <History /> : <Navigate to="/login" />} />
+        <Route path="/video/:therapistId" element={user ? <VideoCall /> : <Navigate to="/login" />} />
 <Route path="/notifications" element={user ? <Notifications /> : <Navigate to="/login" />} />
       </Routes>
     </Router>

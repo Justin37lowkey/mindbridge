@@ -78,7 +78,10 @@ function Therapists() {
                   >
                     💬 Start Chat
                   </button>
-                  <button style={styles.videoBtn}>
+                 <button
+  style={styles.videoBtn}
+  onClick={() => navigate(`/video/${therapist.id}`)}
+>
                     📹 Video Call
                   </button>
                 </div>
