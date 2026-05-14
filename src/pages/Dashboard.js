@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
 import { doc, getDoc, collection, addDoc, serverTimestamp, query, where, onSnapshot } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 function Dashboard() {
   const [userData, setUserData] = useState(null);
@@ -45,6 +45,9 @@ function Dashboard() {
       <div style={styles.loadingText}>Loading your dashboard...</div>
     </div>
   );
+  if (userData.role === 'therapist') {
+  return <Navigate to="/therapist-dashboard" />;
+}
 
   return (
     <div style={styles.container}>

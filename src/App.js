@@ -12,6 +12,7 @@ import History from './pages/History';
 import Notifications from './pages/Notifications';
 import './App.css';
 import VideoCall from './pages/VideoCall';
+import TherapistDashboard from './pages/TherapistDashboard';
 
 function App() {
   const [user, loading] = useAuthState(auth);
@@ -34,6 +35,7 @@ function App() {
         <Route path="/admin" element={user ? <Admin /> : <Navigate to="/login" />} />
         <Route path="/history" element={user ? <History /> : <Navigate to="/login" />} />
         <Route path="/video/:therapistId" element={user ? <VideoCall /> : <Navigate to="/login" />} />
+        <Route path="/therapist-dashboard" element={user ? <TherapistDashboard /> : <Navigate to="/login" />} />
 <Route path="/notifications" element={user ? <Notifications /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
