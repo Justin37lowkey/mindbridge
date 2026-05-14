@@ -11,7 +11,7 @@ function Chat() {
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
   const { therapistId } = useParams();
-  const navigate = useNavigate();
+const user = auth.currentUser;
  const user = auth.currentUser;
   const bottomRef = useRef(null);
 
@@ -65,7 +65,7 @@ function Chat() {
     <div style={styles.container}>
       {/* Header */}
       <div style={styles.header}>
-        <button onClick={() => navigate('/therapists')} style={styles.backBtn}>← Back</button>
+        <button onClick={() => navigate(-1)} style={styles.backBtn}>← Back</button>
         <div style={styles.headerCenter}>
           <div style={styles.avatar}>T</div>
           <div>
