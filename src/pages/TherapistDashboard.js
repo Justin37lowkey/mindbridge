@@ -1,10 +1,10 @@
-import SessionNotes from './SessionNotes';
-import ClientChats from './ClientChats';
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
 import { doc, getDoc, collection, query, where, onSnapshot, updateDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import ClientChats from './ClientChats';
+import SessionNotes from './SessionNotes';
 
 function TherapistDashboard() {
   const [userData, setUserData] = useState(null);
@@ -26,7 +26,6 @@ function TherapistDashboard() {
     };
     fetchUser();
 
-    // Listen for SOS alerts in real time
     const q = query(collection(db, 'sos_alerts'), where('status', '==', 'pending'));
     const unsub = onSnapshot(q, snapshot => {
       setSosAlerts(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -176,14 +175,20 @@ function TherapistDashboard() {
         )}
 
         {/* Chats Tab */}
-{activeTab === 'chats' && (
-  <ClientChats therapistId={user.uid} />
-)}
+        {activeTab === 'chats' && (
+          <ClientChats therapistId={user.uid} />
+        )}
 
-       {/* Notes Tab */}
-{activeTab === 'notes' && (
-  <SessionNotes therapistId={user.uid} />
-)}
+        {/* Notes Tab */}
+        {activeTab === 'notes' && (
+          <SessionNotes therapistId={user.uid} />
+        )}
+
+      </div>
+    </div>
+  );
+}
+
 const styles = {
   container: { minHeight: '100vh', background: '#f1f5f9' },
   loading: { minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#0f172a' },
