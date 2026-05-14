@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
 function Therapists() {
@@ -19,6 +19,18 @@ function Therapists() {
     fetchTherapists();
   }, []);
 
+  const handleVideoCall = async (therapistId) => {
+    const user = auth.currentUser;
+    await addDoc(collection(db, 'call_requests'), {
+      therapistId,
+      clientId: user.uid,
+      clientEmail: user.email,
+      status: 'calling',
+      createdAt: serverTimestamp(),
+    });
+    navigate(`/video/${therapistId}`);
+  };
+
   const demoTherapists = [
     { id: 'demo1', fullName: 'Dr. Abena Mensah', specialization: 'Depression & Anxiety', rating: 4.9, available: true, experience: '8 years', email: 'abena@mindbridge.com' },
     { id: 'demo2', fullName: 'Dr. Kwame Asante', specialization: 'Trauma & PTSD', rating: 4.8, available: true, experience: '12 years', email: 'kwame@mindbridge.com' },
@@ -30,7 +42,6 @@ function Therapists() {
 
   return (
     <div style={styles.container}>
-      {/* Header */}
       <div style={styles.header}>
         <button onClick={() => navigate('/dashboard')} style={styles.backBtn}>← Back</button>
         <h1 style={styles.title}>Find a Therapist</h1>
@@ -38,9 +49,7 @@ function Therapists() {
       </div>
 
       <div style={styles.content}>
-        <p style={styles.subtitle}>
-          Connect with licensed mental health professionals
-        </p>
+        <p style={styles.subtitle}>Connect with licensed mental health professionals</p>
 
         {loading ? (
           <div style={styles.loadingText}>Loading therapists...</div>
@@ -78,10 +87,10 @@ function Therapists() {
                   >
                     💬 Start Chat
                   </button>
-                 <button
-  style={styles.videoBtn}
-  onClick={() => navigate(`/video/${therapist.id}`)}
->
+                  <button
+                    style={styles.videoBtn}
+                    onClick={() => handleVideoCall(therapist.id)}
+                  >
                     📹 Video Call
                   </button>
                 </div>
@@ -95,10 +104,7 @@ function Therapists() {
 }
 
 const styles = {
-  container: {
-    minHeight: '100vh',
-    background: '#f1f5f9',
-  },
+  container: { minHeight: '100vh', background: '#f1f5f9' },
   header: {
     background: 'linear-gradient(135deg, #0f172a, #1e3a5f)',
     padding: '20px 24px',
@@ -115,20 +121,10 @@ const styles = {
     cursor: 'pointer',
     fontSize: '14px',
   },
-  title: {
-    color: 'white',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    margin: 0,
-  },
+  title: { color: 'white', fontSize: '18px', fontWeight: 'bold', margin: 0 },
   placeholder: { width: '70px' },
   content: { padding: '20px 16px' },
-  subtitle: {
-    color: '#64748b',
-    fontSize: '14px',
-    marginBottom: '20px',
-    textAlign: 'center',
-  },
+  subtitle: { color: '#64748b', fontSize: '14px', marginBottom: '20px', textAlign: 'center' },
   loadingText: { textAlign: 'center', color: '#64748b', padding: '40px' },
   list: { display: 'flex', flexDirection: 'column', gap: '16px' },
   card: {
@@ -155,12 +151,7 @@ const styles = {
   name: { fontWeight: 'bold', fontSize: '16px', color: '#0f172a' },
   spec: { fontSize: '13px', color: '#7c3aed', marginTop: '2px' },
   meta: { fontSize: '12px', color: '#64748b', marginTop: '4px' },
-  statusDot: {
-    width: '12px',
-    height: '12px',
-    borderRadius: '50%',
-    flexShrink: 0,
-  },
+  statusDot: { width: '12px', height: '12px', borderRadius: '50%', flexShrink: 0 },
   availText: { fontSize: '13px', color: '#64748b', marginBottom: '14px' },
   cardActions: { display: 'flex', gap: '10px' },
   chatBtn: {

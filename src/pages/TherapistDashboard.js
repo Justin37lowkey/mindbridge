@@ -10,6 +10,7 @@ function TherapistDashboard() {
   const [userData, setUserData] = useState(null);
   const [sosAlerts, setSosAlerts] = useState([]);
   const [available, setAvailable] = useState(true);
+  const [incomingCall, setIncomingCall] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const navigate = useNavigate();
   const user = auth.currentUser;
@@ -30,7 +31,25 @@ function TherapistDashboard() {
     const unsub = onSnapshot(q, snapshot => {
       setSosAlerts(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
     });
-    return () => unsub();
+
+    const callQuery = query(
+      collection(db, 'call_requests'),
+      where('therapistId', '==', user.uid),
+      where('status', '==', 'calling')
+    );
+    const callUnsub = onSnapshot(callQuery, snapshot => {
+      if (!snapshot.empty) {
+        const call = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+        setIncomingCall(call);
+      } else {
+        setIncomingCall(null);
+      }
+    });
+
+    return () => {
+      unsub();
+      callUnsub();
+    };
   }, [user]);
 
   const toggleAvailability = async () => {
@@ -41,6 +60,22 @@ function TherapistDashboard() {
 
   const resolveAlert = async (alertId) => {
     await updateDoc(doc(db, 'sos_alerts', alertId), { status: 'resolved' });
+  };
+
+  const answerCall = async () => {
+    if (!incomingCall) return;
+    await updateDoc(doc(db, 'call_requests', incomingCall.id), {
+      status: 'answered'
+    });
+    navigate(`/video/${incomingCall.clientId}`);
+  };
+
+  const rejectCall = async () => {
+    if (!incomingCall) return;
+    await updateDoc(doc(db, 'call_requests', incomingCall.id), {
+      status: 'rejected'
+    });
+    setIncomingCall(null);
   };
 
   const handleLogout = async () => {
@@ -72,6 +107,27 @@ function TherapistDashboard() {
           <button onClick={handleLogout} style={styles.logoutBtn}>Sign Out</button>
         </div>
       </div>
+
+      {/* Incoming Call Banner */}
+      {incomingCall && (
+        <div style={styles.callBanner}>
+          <div style={styles.callInfo}>
+            <div style={styles.callIcon}>📞</div>
+            <div>
+              <div style={styles.callTitle}>Incoming Video Call</div>
+              <div style={styles.callEmail}>{incomingCall.clientEmail}</div>
+            </div>
+          </div>
+          <div style={styles.callActions}>
+            <button style={styles.answerBtn} onClick={answerCall}>
+              ✅ Answer
+            </button>
+            <button style={styles.rejectBtn} onClick={rejectCall}>
+              ❌ Reject
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Stats Row */}
       <div style={styles.statsRow}>
@@ -219,6 +275,38 @@ const styles = {
     padding: '6px 14px',
     cursor: 'pointer',
     fontSize: '13px',
+  },
+  callBanner: {
+    background: 'linear-gradient(135deg, #16a34a, #15803d)',
+    padding: '16px 20px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  callInfo: { display: 'flex', alignItems: 'center', gap: '12px' },
+  callIcon: { fontSize: '32px' },
+  callTitle: { color: 'white', fontWeight: 'bold', fontSize: '16px' },
+  callEmail: { color: '#dcfce7', fontSize: '13px', marginTop: '2px' },
+  callActions: { display: 'flex', gap: '10px' },
+  answerBtn: {
+    padding: '10px 20px',
+    background: 'white',
+    color: '#16a34a',
+    border: 'none',
+    borderRadius: '10px',
+    fontWeight: 'bold',
+    fontSize: '14px',
+    cursor: 'pointer',
+  },
+  rejectBtn: {
+    padding: '10px 20px',
+    background: 'rgba(255,255,255,0.2)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '10px',
+    fontWeight: 'bold',
+    fontSize: '14px',
+    cursor: 'pointer',
   },
   statsRow: {
     display: 'grid',
