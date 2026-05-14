@@ -37,15 +37,13 @@ function VideoCall() {
         });
 
         await client.join(APP_ID, channelName, null, user?.uid);
-
         const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
         const videoTrack = await AgoraRTC.createCameraVideoTrack();
-
         localTrackRef.current = { audio: audioTrack, video: videoTrack };
         videoTrack.play(localVideoRef.current);
         await client.publish([audioTrack, videoTrack]);
-setError('');
-setJoined(true);
+        setError('');
+        setJoined(true);
       } catch (err) {
         setError('Could not access camera/microphone. Please check permissions.');
         console.error(err);
@@ -81,12 +79,11 @@ setJoined(true);
     localTrackRef.current.audio?.close();
     localTrackRef.current.video?.close();
     await clientRef.current?.leave();
-    navigate('/therapists');
+    navigate(-1);
   };
 
   return (
     <div style={styles.container}>
-      {/* Header */}
       <div style={styles.header}>
         <div style={styles.headerText}>
           <div style={styles.title}>🧠 MindBridge</div>
@@ -99,15 +96,13 @@ setJoined(true);
       {error && (
         <div style={styles.errorBox}>
           <p style={styles.errorText}>⚠️ {error}</p>
-          <button style={styles.backBtn} onClick={() => navigate('/therapists')}>
+          <button style={styles.backBtn} onClick={() => navigate(-1)}>
             Go Back
           </button>
         </div>
       )}
 
-      {/* Video Grid */}
       <div style={styles.videoGrid}>
-        {/* Remote Video */}
         <div style={styles.remoteBox}>
           <div id="remote-video" style={styles.videoPlayer} />
           {!joined && (
@@ -119,14 +114,12 @@ setJoined(true);
           <div style={styles.videoLabel}>Therapist</div>
         </div>
 
-        {/* Local Video */}
         <div style={styles.localBox}>
           <div ref={localVideoRef} style={styles.videoPlayer} />
           <div style={styles.videoLabel}>You</div>
         </div>
       </div>
 
-      {/* Controls */}
       <div style={styles.controls}>
         <button
           style={{...styles.controlBtn, background: micOn ? '#1e3a5f' : '#dc2626'}}
@@ -154,122 +147,26 @@ setJoined(true);
 }
 
 const styles = {
-  container: {
-    height: '100vh',
-    background: '#0a0f1e',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  header: {
-    background: 'linear-gradient(135deg, #0f172a, #1e3a5f)',
-    padding: '16px 24px',
-    display: 'flex',
-    alignItems: 'center',
-  },
+  container: { height: '100vh', background: '#0a0f1e', display: 'flex', flexDirection: 'column' },
+  header: { background: 'linear-gradient(135deg, #0f172a, #1e3a5f)', padding: '16px 24px', display: 'flex', alignItems: 'center' },
   headerText: {},
   title: { color: 'white', fontSize: '18px', fontWeight: 'bold' },
   subtitle: { color: '#94a3b8', fontSize: '12px', marginTop: '2px' },
-  errorBox: {
-    background: '#fef2f2',
-    padding: '20px',
-    textAlign: 'center',
-  },
+  errorBox: { background: '#fef2f2', padding: '20px', textAlign: 'center' },
   errorText: { color: '#dc2626', fontSize: '15px' },
-  backBtn: {
-    padding: '10px 24px',
-    background: '#dc2626',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    marginTop: '10px',
-  },
-  videoGrid: {
-    flex: 1,
-    display: 'grid',
-    gridTemplateColumns: '1fr',
-    gridTemplateRows: '1fr 200px',
-    gap: '4px',
-    padding: '8px',
-    overflow: 'hidden',
-  },
-  remoteBox: {
-    position: 'relative',
-    background: '#1a2744',
-    borderRadius: '16px',
-    overflow: 'hidden',
-  },
-  localBox: {
-    position: 'relative',
-    background: '#1a2744',
-    borderRadius: '12px',
-    overflow: 'hidden',
-  },
-  videoPlayer: {
-    width: '100%',
-    height: '100%',
-    background: '#0f172a',
-  },
-  waitingOverlay: {
-    position: 'absolute',
-    inset: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    background: '#1a2744',
-  },
+  backBtn: { padding: '10px 24px', background: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', marginTop: '10px' },
+  videoGrid: { flex: 1, display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: '1fr 200px', gap: '4px', padding: '8px', overflow: 'hidden' },
+  remoteBox: { position: 'relative', background: '#1a2744', borderRadius: '16px', overflow: 'hidden' },
+  localBox: { position: 'relative', background: '#1a2744', borderRadius: '12px', overflow: 'hidden' },
+  videoPlayer: { width: '100%', height: '100%', background: '#0f172a' },
+  waitingOverlay: { position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: '#1a2744' },
   waitingIcon: { fontSize: '60px', marginBottom: '16px' },
   waitingText: { color: '#94a3b8', fontSize: '16px', textAlign: 'center' },
-  videoLabel: {
-    position: 'absolute',
-    bottom: '10px',
-    left: '12px',
-    color: 'white',
-    fontSize: '12px',
-    background: 'rgba(0,0,0,0.5)',
-    padding: '4px 10px',
-    borderRadius: '20px',
-  },
-  controls: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '24px',
-    padding: '20px',
-    background: '#0f172a',
-  },
-  controlBtn: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '4px',
-    padding: '14px 20px',
-    border: 'none',
-    borderRadius: '16px',
-    cursor: 'pointer',
-    fontSize: '24px',
-    color: 'white',
-    minWidth: '80px',
-  },
-  endBtn: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '4px',
-    padding: '14px 28px',
-    background: '#dc2626',
-    border: 'none',
-    borderRadius: '16px',
-    cursor: 'pointer',
-    fontSize: '28px',
-    color: 'white',
-    minWidth: '100px',
-  },
-  btnLabel: {
-    fontSize: '11px',
-    fontWeight: '600',
-  },
+  videoLabel: { position: 'absolute', bottom: '10px', left: '12px', color: 'white', fontSize: '12px', background: 'rgba(0,0,0,0.5)', padding: '4px 10px', borderRadius: '20px' },
+  controls: { display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '24px', padding: '20px', background: '#0f172a' },
+  controlBtn: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '14px 20px', border: 'none', borderRadius: '16px', cursor: 'pointer', fontSize: '24px', color: 'white', minWidth: '80px' },
+  endBtn: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '14px 28px', background: '#dc2626', border: 'none', borderRadius: '16px', cursor: 'pointer', fontSize: '28px', color: 'white', minWidth: '100px' },
+  btnLabel: { fontSize: '11px', fontWeight: '600' },
 };
 
 export default VideoCall;
