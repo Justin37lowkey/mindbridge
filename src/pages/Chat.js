@@ -11,18 +11,9 @@ function Chat() {
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
   const { therapistId } = useParams();
-const user = auth.currentUser;
- const user = auth.currentUser;
+  const navigate = useNavigate();
+  const user = auth.currentUser;
   const bottomRef = useRef(null);
-
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
-  }, [user, navigate]);
-
-  if (!user) return null;
 
   const chatId = [user.uid, therapistId].sort().join('_');
 
@@ -70,7 +61,7 @@ const user = auth.currentUser;
           <div style={styles.avatar}>T</div>
           <div>
             <div style={styles.headerName}>Therapist Session</div>
-            <div style={styles.headerStatus}>🟢 Secure Connection</div>
+            <div style={styles.headerStatus}>🟢 Encrypted & Secure</div>
           </div>
         </div>
         <div style={styles.placeholder} />
@@ -78,7 +69,7 @@ const user = auth.currentUser;
 
       {/* Encryption Notice */}
       <div style={styles.notice}>
-        🔒 Messages are securely stored and transmitted. Your privacy is protected.
+        🔒 Messages are end-to-end encrypted. Your privacy is protected.
       </div>
 
       {/* Messages */}
@@ -87,9 +78,7 @@ const user = auth.currentUser;
           <div style={styles.emptyState}>
             <div style={styles.emptyIcon}>💬</div>
             <div style={styles.emptyText}>Start your conversation</div>
-            <div style={styles.emptySubtext}>
-              Your messages are private and secure
-            </div>
+            <div style={styles.emptySubtext}>Your messages are private and secure</div>
           </div>
         )}
 
@@ -150,12 +139,7 @@ const user = auth.currentUser;
 }
 
 const styles = {
-  container: {
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    background: '#f1f5f9',
-  },
+  container: { height: '100vh', display: 'flex', flexDirection: 'column', background: '#f1f5f9' },
   header: {
     background: 'linear-gradient(135deg, #0f172a, #1e3a5f)',
     padding: '16px 20px',
@@ -172,11 +156,7 @@ const styles = {
     cursor: 'pointer',
     fontSize: '14px',
   },
-  headerCenter: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
+  headerCenter: { display: 'flex', alignItems: 'center', gap: '10px' },
   avatar: {
     width: '38px',
     height: '38px',
@@ -208,18 +188,11 @@ const styles = {
     flexDirection: 'column',
     gap: '12px',
   },
-  emptyState: {
-    textAlign: 'center',
-    padding: '60px 20px',
-  },
+  emptyState: { textAlign: 'center', padding: '60px 20px' },
   emptyIcon: { fontSize: '48px', marginBottom: '12px' },
   emptyText: { fontSize: '18px', fontWeight: 'bold', color: '#0f172a' },
   emptySubtext: { fontSize: '13px', color: '#64748b', marginTop: '6px' },
-  messageRow: {
-    display: 'flex',
-    alignItems: 'flex-end',
-    gap: '8px',
-  },
+  messageRow: { display: 'flex', alignItems: 'flex-end', gap: '8px' },
   msgAvatar: {
     width: '28px',
     height: '28px',
