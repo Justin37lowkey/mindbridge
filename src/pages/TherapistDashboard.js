@@ -1,3 +1,5 @@
+import SessionNotes from './SessionNotes';
+import ClientChats from './ClientChats';
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
 import { doc, getDoc, collection, query, where, onSnapshot, updateDoc } from 'firebase/firestore';
@@ -174,31 +176,14 @@ function TherapistDashboard() {
         )}
 
         {/* Chats Tab */}
-        {activeTab === 'chats' && (
-          <div style={styles.empty}>
-            <div style={styles.emptyIcon}>💬</div>
-            <div style={styles.emptyText}>No active chats yet</div>
-            <div style={styles.emptySubtext}>
-              When clients message you, they will appear here
-            </div>
-          </div>
-        )}
+{activeTab === 'chats' && (
+  <ClientChats therapistId={user.uid} />
+)}
 
-        {/* Notes Tab */}
-        {activeTab === 'notes' && (
-          <div style={styles.empty}>
-            <div style={styles.emptyIcon}>📋</div>
-            <div style={styles.emptyText}>No session notes yet</div>
-            <div style={styles.emptySubtext}>
-              Notes you write after sessions will appear here
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
+       {/* Notes Tab */}
+{activeTab === 'notes' && (
+  <SessionNotes therapistId={user.uid} />
+)}
 const styles = {
   container: { minHeight: '100vh', background: '#f1f5f9' },
   loading: { minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#0f172a' },
