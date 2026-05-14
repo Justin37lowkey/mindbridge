@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -8,6 +8,7 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -21,6 +22,20 @@ function Login() {
       setError('Invalid email or password. Please try again.');
     }
     setLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError('Please enter your email address above first.');
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setResetSent(true);
+      setError('');
+    } catch (err) {
+      setError('Could not send reset email. Check the email and try again.');
+    }
   };
 
   return (
@@ -46,7 +61,17 @@ function Login() {
             onChange={e => setPassword(e.target.value)}
             required
           />
+
+          {resetSent ? (
+            <p style={styles.successMsg}>✅ Reset link sent! Check your email.</p>
+          ) : (
+            <p style={styles.forgotText} onClick={handleForgotPassword}>
+              Forgot password?
+            </p>
+          )}
+
           {error && <p style={styles.error}>{error}</p>}
+
           <button style={styles.button} type="submit" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
@@ -87,6 +112,19 @@ const styles = {
     border: '1.5px solid #e2e8f0',
     fontSize: '15px',
     outline: 'none',
+  },
+  forgotText: {
+    textAlign: 'right',
+    fontSize: '13px',
+    color: '#2563eb',
+    cursor: 'pointer',
+    margin: '0',
+  },
+  successMsg: {
+    textAlign: 'right',
+    fontSize: '13px',
+    color: '#16a34a',
+    margin: '0',
   },
   button: {
     padding: '14px',
